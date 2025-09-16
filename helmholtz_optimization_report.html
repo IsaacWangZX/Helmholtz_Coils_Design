@@ -1,0 +1,38 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>亥姆霍兹线圈优化报告</title>
+        <meta charset="utf-8">
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            h1 { color: #2c3e50; text-align: center; }
+            h2 { color: #34495e; border-bottom: 2px solid #3498db; }
+            table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+            th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+            th { background-color: #3498db; color: white; }
+            tr:nth-child(even) { background-color: #f2f2f2; }
+            .metric { background-color: #ecf0f1; padding: 10px; margin: 10px 0; border-radius: 5px; }
+            .best { background-color: #d5f4e6; font-weight: bold; }
+        </style>
+    </head>
+    <body>
+        <h1>亥姆霍兹线圈优化算法对比报告</h1>
+    <h2>算法性能对比</h2><table><tr><th>算法</th><th>平均适应度</th><th>最佳适应度</th><th>平均时间(s)</th><th>成功率</th></tr><tr><td>PSO</td><td>0.004420</td><td>0.004420</td><td>25.284</td><td>100.00%</td></tr><tr><td>DE</td><td>0.002859</td><td>0.002859</td><td>25.347</td><td>100.00%</td></tr><tr><td>GA</td><td>0.141439</td><td>0.141439</td><td>25.346</td><td>100.00%</td></tr><tr><td>Fusion_parallel</td><td>0.009469</td><td>0.009469</td><td>34.060</td><td>100.00%</td></tr><tr><td>Fusion_adaptive</td><td>0.012212</td><td>0.012212</td><td>40.683</td><td>100.00%</td></tr></table>
+    <h2>最佳算法</h2>
+    <div class="metric best">最佳适应度: DE</div>
+    <div class="metric best">最快执行: PSO</div>
+    <div class="metric best">最高成功率: PSO</div>
+    
+    <h2>建议</h2>
+    <div class="metric">
+    <p><strong>选择建议:</strong></p>
+    <ul>
+        <li>如果追求最优解质量，推荐使用 DE</li>
+        <li>如果追求计算速度，推荐使用 PSO</li>
+        <li>如果追求稳定性，推荐使用 PSO</li>
+    </ul>
+    </div>
+    </body>
+    </html>
+    

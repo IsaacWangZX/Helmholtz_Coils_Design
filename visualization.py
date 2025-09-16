@@ -325,8 +325,18 @@ class HelmholtzVisualizer:
         angles = np.linspace(0, 2 * np.pi, len(metrics), endpoint=False).tolist()
         angles += angles[:1]  # 闭合图形
         
-        ax.set_theta_offset(np.pi / 2)
-        ax.set_theta_direction(-1)
+        # 兼容不同matplotlib版本的雷达图设置
+        try:
+            ax.set_theta_offset(np.pi / 2)
+        except AttributeError:
+            # 对于不支持set_theta_offset的版本，使用其他方法
+            pass
+        
+        try:
+            ax.set_theta_direction(-1)
+        except AttributeError:
+            pass
+            
         ax.set_thetagrids(np.degrees(angles[:-1]), metric_labels)
         ax.set_ylim(0, 1)
         ax.grid(True)
