@@ -18,6 +18,8 @@ from optimization_algorithms import (
     run_optimization_comparison, plot_optimization_comparison,
     create_optimization_suite
 )
+from visualization import HelmholtzVisualizer, create_comparison_report
+from helmholtz_coil import create_optimized_helmholtz_system
 
 class HelmholtzOptimizationDemo:
     """亥姆霍兹线圈优化演示类"""
@@ -33,6 +35,7 @@ class HelmholtzOptimizationDemo:
         self.num_coil_pairs = num_coil_pairs
         self.target_field = target_field
         self.bounds = create_helmholtz_bounds(num_coil_pairs)
+        self.visualizer = HelmholtzVisualizer()
         
         print(f"亥姆霍兹线圈优化演示")
         print(f"线圈对数量: {num_coil_pairs}")
@@ -187,12 +190,16 @@ class HelmholtzOptimizationDemo:
         
         # 绘制算法比较
         if 'algorithm_comparison' in results:
-            plot_optimization_comparison(results['algorithm_comparison'])
+            self.visualizer.plot_algorithm_comparison(results['algorithm_comparison'])
+            self.visualizer.plot_optimization_summary(results['algorithm_comparison'])
         
         # 绘制单目标优化结果
         single_results = {k: v for k, v in results.items() if k.startswith('single_')}
         if single_results:
             self._plot_single_objective_results(single_results)
+        
+        # 绘制最优解的磁场分布
+        self._visualize_best_solutions(results)
     
     def _plot_single_objective_results(self, results: Dict):
         """绘制单目标优化结果"""
@@ -216,6 +223,52 @@ class HelmholtzOptimizationDemo:
         
         plt.tight_layout()
         plt.show()
+    
+    def _visualize_best_solutions(self, results: Dict):
+        """可视化最优解的磁场分布"""
+        print(f"\n--- 最优解磁场分布可视化 ---")
+        
+        # 找到最佳解
+        best_solution = None
+        best_fitness = float('inf')
+        best_objective = None
+        
+        single_results = {k: v for k, v in results.items() if k.startswith('single_')}
+        for obj_name, result in single_results.items():
+            if result['fitness'] < best_fitness:
+                best_fitness = result['fitness']
+                best_solution = result['solution']
+                best_objective = obj_name.replace('single_', '')
+        
+        if best_solution is not None:
+            print(f"最佳解来自: {best_objective} 优化")
+            print(f"最佳解: {best_solution}")
+            print(f"最佳适应度: {best_fitness:.6f}")
+            
+            # 创建最优线圈系统
+            try:
+                best_system = create_optimized_helmholtz_system(best_solution.tolist())
+                
+                # 绘制磁场分布
+                self.visualizer.plot_field_distribution(
+                    best_system, region_size=0.02, resolution=15,
+                    title=f"最优线圈磁场分布 ({best_objective}优化)")
+                
+                # 绘制磁场均匀性分析
+                self.visualizer.plot_field_uniformity(
+                    best_system, region_size=0.02, resolution=15,
+                    title=f"最优线圈磁场均匀性分析 ({best_objective}优化)")
+                
+            except Exception as e:
+                print(f"磁场可视化出错: {e}")
+        else:
+            print("未找到有效的最优解")
+    
+    def _plot_convergence_curves(self, algorithms: List):
+        """绘制收敛曲线"""
+        if algorithms:
+            self.visualizer.plot_convergence_curves(
+                algorithms, title="算法收敛曲线对比")
     
     def generate_report(self, results: Dict) -> str:
         """生成优化报告"""
@@ -298,6 +351,11 @@ def main():
     # 保存报告到文件
     with open('optimization_report.txt', 'w', encoding='utf-8') as f:
         f.write(report)
+    
+    # 生成HTML报告
+    if 'algorithm_comparison' in results:
+        create_comparison_report(results['algorithm_comparison'], 'optimization_report.html')
+        print("HTML报告已保存到 optimization_report.html")
     
     print("\n优化报告已保存到 optimization_report.txt")
 
